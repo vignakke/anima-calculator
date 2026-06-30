@@ -3,77 +3,82 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>More Qi Cost Calculator</title>
+<title>More Qi Calculator</title>
 <style>
   :root {
-    --bg: #060b12;
-    --panel: #0d1825;
-    --line: #1c2c3e;
-    --blue: #38bdf8;
-    --blue-soft: #7dd3fc;
-    --text: #cdd9e5;
-    --muted: #6b8299;
+    --bg:        #080d15;
+    --bg-glow:   #122236;
+    --card:      #0f1a28;
+    --card-2:    #0b1420;
+    --inset:     #0a121d;
+    --border:    #1e2e42;
+    --border-2:  #2a3e58;
+    --text:      #e6eef7;
+    --muted:     #7990a8;
+    --faint:     #4f6378;
+    --accent:    #45c4ff;
+    --accent-2:  #8ad8ff;
+    --good:      #4ade80;
+    --good-bg:   rgba(74,222,128,0.12);
+    --warn:      #fbbf24;
+    --bad:       #fb7185;
+    --bad-bg:    rgba(251,113,133,0.10);
+    --radius:    16px;
   }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
+  html, body { min-height: 100%; }
   body {
-    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     background:
-      radial-gradient(900px 500px at 50% -10%, #11243a 0%, transparent 60%),
+      radial-gradient(1100px 600px at 50% -15%, var(--bg-glow) 0%, transparent 55%),
       var(--bg);
     color: var(--text);
     display: flex;
+    justify-content: center;
     align-items: flex-start;
-    justify-content: center;
-    padding: 48px 20px;
+    padding: 56px 24px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
-  .wrap { width: 100%; max-width: 520px; }
 
-  header { margin-bottom: 28px; text-align: center; }
-  .title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
+  .app {
+    width: 100%;
+    max-width: 1060px;
+    display: grid;
+    grid-template-columns: 1fr 470px;
+    gap: 20px;
+    align-items: start;
   }
-  /* Real animated glow: the flame orb softly breathes */
+
+  /* ---------- header ---------- */
+  header { grid-column: 1 / -1; text-align: center; }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 13px;
+  }
   .orb {
-    width: 34px; height: 34px;
+    width: 30px; height: 30px;
     border-radius: 50%;
-    background: radial-gradient(circle at 50% 38%, #bdecff 0%, #38bdf8 45%, #1a6fb0 100%);
-    position: relative;
-    animation: breathe 3.4s ease-in-out infinite;
+    background: radial-gradient(circle at 50% 35%, #d6f3ff 0%, #5cc8ff 42%, #1c74b4 100%);
+    animation: breathe 3.6s ease-in-out infinite;
   }
   @keyframes breathe {
-    0%, 100% {
-      box-shadow: 0 0 8px 1px rgba(56,189,248,0.45),
-                  0 0 18px 4px rgba(56,189,248,0.20);
-      transform: translateY(0) scale(1);
-    }
-    50% {
-      box-shadow: 0 0 14px 3px rgba(125,211,252,0.70),
-                  0 0 34px 10px rgba(56,189,248,0.30);
-      transform: translateY(-1px) scale(1.04);
-    }
+    0%, 100% { box-shadow: 0 0 7px 1px rgba(69,196,255,.5), 0 0 16px 4px rgba(69,196,255,.18); transform: scale(1); }
+    50%      { box-shadow: 0 0 13px 3px rgba(138,216,255,.7), 0 0 30px 9px rgba(69,196,255,.28); transform: scale(1.05); }
   }
-  h1 {
-    font-size: 25px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    color: #eaf4fb;
-  }
-  h1 span { color: var(--blue); }
-  .tag {
-    margin-top: 8px;
-    font-size: 13.5px;
-    color: var(--muted);
-  }
+  h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.2px; }
+  h1 b { color: var(--accent); font-weight: 700; }
+  .sub { margin-top: 7px; color: var(--muted); font-size: 14px; }
 
-  .panel {
-    background: linear-gradient(180deg, var(--panel) 0%, #0a131e 100%);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 24px;
+  /* ---------- card ---------- */
+  .card {
+    background: linear-gradient(180deg, var(--card) 0%, var(--card-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px;
+    box-shadow: 0 24px 60px -28px rgba(0,0,0,.7);
   }
 
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -81,379 +86,402 @@
   .field:last-child { margin-bottom: 0; }
   label {
     display: block;
-    font-size: 12px;
+    font-size: 11.5px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.6px;
+    letter-spacing: 0.7px;
     color: var(--muted);
-    margin-bottom: 7px;
-    text-align: center;
+    margin-bottom: 8px;
   }
-  input, select {
+  .input {
+    position: relative;
+  }
+  input {
     width: 100%;
-    padding: 12px 13px;
-    background: #07101a;
-    border: 1px solid var(--line);
-    border-radius: 9px;
-    color: #eaf4fb;
-    font-size: 16px;
-    font-weight: 500;
-    text-align: center;
+    padding: 13px 14px;
+    background: var(--inset);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    color: var(--text);
+    font-size: 17px;
+    font-weight: 600;
+    font-family: inherit;
     transition: border-color .15s, box-shadow .15s;
   }
-  input:focus, select:focus {
+  input::placeholder { color: var(--faint); font-weight: 500; }
+  input:focus {
     outline: none;
-    border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(56,189,248,0.12);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(69,196,255,.14);
   }
-  select { cursor: pointer; }
+  .hint-inline { font-size: 12px; color: var(--faint); margin-top: 7px; }
+  .err { font-size: 12.5px; color: var(--bad); margin-top: 7px; min-height: 0; }
 
-  .anima-input { display: grid; grid-template-columns: 1fr 130px; gap: 10px; }
+  .rule { height: 1px; background: var(--border); margin: 24px 0; }
 
-  .divider { height: 1px; background: var(--line); margin: 22px 0; }
-
-  .out-main { text-align: center; }
-  .out-label {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: var(--muted);
-    margin-bottom: 10px;
+  /* ---------- result ---------- */
+  .result { text-align: center; }
+  .result .cap {
+    font-size: 11.5px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--muted); margin-bottom: 12px;
   }
-  .out-value {
-    font-size: 40px;
-    font-weight: 700;
-    color: var(--blue);
-    line-height: 1.05;
+  .result .big {
+    font-size: 44px; font-weight: 800; letter-spacing: -1px;
+    color: var(--accent); line-height: 1;
     word-break: break-word;
+    text-shadow: 0 0 26px rgba(69,196,255,.35);
   }
-  .out-note { margin-top: 8px; font-size: 13px; color: var(--muted); }
+  .result .empty {
+    font-size: 16px; font-weight: 500; color: var(--faint);
+    text-shadow: none; letter-spacing: 0;
+  }
 
-  /* centered have/need pair */
-  .pair {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 22px;
+  /* you have / you need */
+  .compare {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px;
   }
-  .pair .cell {
-    text-align: center;
-    padding: 14px 10px;
-    background: #07101a;
-    border: 1px solid var(--line);
-    border-radius: 10px;
+  .compare .box {
+    background: var(--inset); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 12px; text-align: center;
   }
-  .pair .cell .lbl {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: var(--muted);
-    margin-bottom: 6px;
+  .compare .box .k {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .6px; color: var(--muted); margin-bottom: 6px;
   }
-  .pair .cell .num { font-size: 19px; font-weight: 700; color: #eaf4fb; word-break: break-word; }
+  .compare .box .v { font-size: 20px; font-weight: 700; word-break: break-word; }
 
-  .stat-row {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 0;
-    border-top: 1px solid var(--line);
-    font-size: 14px;
-    text-align: center;
-  }
-  .stat-row .k { color: var(--muted); }
-  .stat-row .v { color: #eaf4fb; font-weight: 600; }
-
+  /* verdict */
   .verdict {
-    margin-top: 16px;
-    padding: 14px 15px;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 700;
-    text-align: center;
-    display: none;
+    margin-top: 16px; padding: 16px; border-radius: 12px;
+    text-align: center; display: none;
   }
-  .verdict.ok { display: block; background: rgba(34,197,124,0.10); border: 1px solid rgba(34,197,124,0.35); color: #54d99a; }
-  .verdict.bad { display: block; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.30); color: #f49aa0; }
-  .verdict .big { display: block; font-size: 24px; margin-top: 4px; }
-  .verdict .sub { display: block; font-size: 13px; font-weight: 500; opacity: 0.85; margin-top: 8px; }
+  .verdict.show { display: block; }
+  .verdict.ok  { background: var(--good-bg); border: 1px solid rgba(74,222,128,.32); }
+  .verdict.bad { background: var(--bad-bg);  border: 1px solid rgba(251,113,133,.28); }
+  .verdict .line1 { font-size: 13.5px; font-weight: 600; color: var(--muted); }
+  .verdict.ok .headline  { color: var(--good); }
+  .verdict.bad .headline { color: var(--text); }
+  .verdict .headline { font-size: 22px; font-weight: 800; margin-top: 5px; letter-spacing: -.3px; }
+  .verdict .ratio { display: block; margin-top: 9px; font-size: 13px; font-weight: 600; color: var(--muted); }
 
-  /* rank chain: current -> ranks left -> goal */
-  .chain {
+  /* mini rank path inside the verdict */
+  .path {
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+    gap: 7px; margin-top: 4px;
+  }
+  .path .n {
+    padding: 4px 10px; border-radius: 8px; font-size: 14px; font-weight: 700;
+  }
+  .path .n.now  { color: var(--text); background: #16273a; border: 1px solid var(--border-2); }
+  .path .n.mid  { color: var(--warn); }
+  .path .n.goal { color: var(--good); background: var(--good-bg); border: 1px solid rgba(74,222,128,.32); }
+  .path .arr { color: var(--faint); font-weight: 700; }
+
+  /* next-level footer row */
+  .nextrow {
+    display: flex; justify-content: center; align-items: center; gap: 9px;
+    margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .nextrow .k { color: var(--muted); }
+  .nextrow .v { color: var(--text); font-weight: 700; }
+
+  /* ---------- ranks side panel ---------- */
+  .ranks {
+    background: linear-gradient(180deg, var(--card) 0%, var(--card-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    box-shadow: 0 24px 60px -28px rgba(0,0,0,.7);
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    margin-top: 4px;
+    flex-direction: column;
+    min-height: 0;
   }
-  .chain .node {
-    padding: 4px 9px;
-    border-radius: 7px;
-    font-size: 15px;
-    font-weight: 700;
+  .ranks .head {
+    font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .8px; color: var(--muted); text-align: center;
+    padding-bottom: 11px;
+    border-bottom: 1px solid var(--border);
   }
-  .chain .now  { color: #eaf4fb; background: #0f2233; border: 1px solid var(--line); }
-  .chain .todo { color: #f0b352; }                       /* ranks still to farm */
-  .chain .goal { color: #54d99a; background: rgba(34,197,124,0.12); border: 1px solid rgba(34,197,124,0.35); }
-  .chain .sep  { color: var(--muted); font-weight: 600; }
-
-  .msg { font-size: 13px; color: #f49aa0; margin-top: 8px; min-height: 0; }
+  /* all ranks fit at once: many columns, tight rows, no scroll */
+  .ranks .list {
+    column-count: 4; column-gap: 10px;
+    padding-top: 9px;
+  }
+  .r {
+    break-inside: avoid;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    padding: 2px 6px; border-radius: 6px;
+    font-size: 13px; color: var(--muted); line-height: 1.42;
+  }
+  .r .nm { font-weight: 600; }
+  .r .tg { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; }
+  .r.now  { color: var(--text); background: #16273a; }
+  .r.now .tg  { color: var(--accent); }
+  .r.mid  { color: var(--warn); }
+  .r.goal { color: var(--good); background: var(--good-bg); }
+  .r.goal .tg { color: var(--good); }
+  .ranks .list::-webkit-scrollbar { width: 8px; }
+  .ranks .list::-webkit-scrollbar-track { background: transparent; }
+  .ranks .list::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 4px; }
 
   footer {
-    margin-top: 20px;
-    font-size: 12.5px;
-    color: var(--muted);
-    line-height: 1.6;
+    grid-column: 1 / -1;
+    text-align: center; color: var(--faint); font-size: 12.5px; margin-top: 4px;
   }
-  footer code {
-    background: #07101a;
-    border: 1px solid var(--line);
-    padding: 1px 6px;
-    border-radius: 5px;
-    color: var(--blue-soft);
-    font-size: 12px;
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 880px) {
+    body { padding: 32px 16px; }
+    .app { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 460px) {
+    .ranks .list { column-count: 3; }
   }
 </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="app">
+
     <header>
-      <div class="title">
-        <div class="orb"></div>
-        <h1>More <span>Qi</span> Calculator</h1>
+      <div class="brand">
+        <span class="orb"></span>
+        <h1>More <b>Qi</b> Calculator</h1>
       </div>
-      <p class="tag">Work out the Anima cost to level your More Qi upgrade.</p>
+      <p class="sub">How much Anima to level up your More Qi upgrade.</p>
     </header>
 
-    <div class="panel">
-      <div class="grid2">
-        <div class="field">
-          <label>Current level</label>
-          <input type="number" id="current" placeholder="252" min="0">
+    <div class="card">
+        <div class="grid2">
+          <div class="field">
+            <label for="current">Current level</label>
+            <div class="input"><input type="number" id="current" placeholder="252" min="0" inputmode="numeric"></div>
+          </div>
+          <div class="field">
+            <label for="target">Target level</label>
+            <div class="input"><input type="number" id="target" placeholder="253" min="1" inputmode="numeric"></div>
+          </div>
         </div>
-        <div class="field">
-          <label>Target level</label>
-          <input type="number" id="target" placeholder="253" min="1">
+
+        <div class="field" style="margin-top:16px">
+          <label for="anima">Anima you have <span style="text-transform:none;color:var(--faint);font-weight:500">(optional)</span></label>
+          <div class="input"><input type="text" id="anima" placeholder="e.g. 42.7Usg" autocomplete="off"></div>
+          <div class="err" id="err"></div>
         </div>
-      </div>
 
-      <div class="field">
-        <label>Anima you have (optional)</label>
-        <input type="text" id="anima" placeholder="e.g. 42.7Usg">
-        <div class="msg" id="msg"></div>
-      </div>
+        <div class="rule"></div>
 
-      <div class="divider"></div>
-
-      <div class="out-main">
-        <div class="out-label">Total cost to reach target</div>
-        <div class="out-value" id="totalCost">&mdash;</div>
-      </div>
-
-      <!-- shown only when Anima is entered -->
-      <div class="pair" id="pair" style="display:none">
-        <div class="cell">
-          <div class="lbl">You have</div>
-          <div class="num" id="yourAnima">&mdash;</div>
+        <div class="result">
+          <div class="cap">Total cost to reach target</div>
+          <div class="big empty" id="total">Enter your levels above</div>
         </div>
-        <div class="cell">
-          <div class="lbl">You need</div>
-          <div class="num" id="needTotal">&mdash;</div>
+
+        <div class="compare" id="compare" style="display:none">
+          <div class="box">
+            <div class="k">You have</div>
+            <div class="v" id="have">&mdash;</div>
+          </div>
+          <div class="box">
+            <div class="k">You need</div>
+            <div class="v" id="need">&mdash;</div>
+          </div>
         </div>
-      </div>
 
-      <div class="verdict" id="verdict"></div>
+        <div class="verdict" id="verdict"></div>
 
-      <div style="margin-top:18px">
-        <div class="stat-row">
-          <span class="k">Next level (<span id="nextLvl">253</span>) costs</span>
+        <div class="nextrow">
+          <span class="k">Next level (<span id="nextLvl">&ndash;</span>) costs</span>
           <span class="v" id="nextCost">&mdash;</span>
         </div>
-      </div>
     </div>
 
-    <footer>
-      Costs and suffixes match the in-game values.
-    </footer>
+    <aside class="ranks">
+      <div class="head">All ranks &mdash; small to big</div>
+      <div class="list" id="rankList"></div>
+    </aside>
+
+    <footer>Costs and suffixes match the in-game values.</footer>
   </div>
 
 <script>
-// ---- Data straight from the spreadsheet ----
-// Named suffixes, index 0..101 (index 0 = no suffix, up to "Cg").
-const NAMED = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc", "Ud", "Dd", "Td", "Qad", "Qid", "Sxd", "Spd", "Ocd", "Nod", "Vg", "Uvg", "Dvg", "Tvg", "Qatvg", "Qivg", "Sxvg", "Spvg", "Ocvg", "Novg", "Tg", "Utg", "Dtg", "Ttg", "Qatg", "Qitg", "Sxtg", "Sptg", "Octg", "Notg", "Qag", "Uqag", "Dqag", "Tqag", "Qaqag", "Qiqag", "Sxqag", "Spqag", "Ocqag", "Noqag", "Qig", "Uqig", "Dqig", "Tqig", "Qaqig", "Qiqig", "Sxqig", "Spqig", "Ocqig", "Noqig", "Sg", "Usg", "Dsg", "Tsg", "Qasg", "Qisg", "Sxsg", "Spsg", "Ocsg", "Nosg", "Spg", "Uspg", "Dspg", "Tspg", "Qaspg", "Qispg", "Sxspg", "Spspg", "Ocspg", "Nospg", "Ocg", "Uocg", "Docg", "Tocg", "Qaocg", "Qiocg", "Sxocg", "Spocg", "Ococg", "Noocg", "Nog", "Unog", "Dnog", "Tnog", "Qanog", "Qinog", "Sxnog", "Spnog", "Ocnog", "Nonog", "Cg"];
+// ============ Data from the spreadsheet ============
+// Named suffixes, group index 0..101 (0 = no suffix, up to "Cg").
+const NAMED = ["", "K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Ud","Dd","Td","Qad","Qid","Sxd","Spd","Ocd","Nod","Vg","Uvg","Dvg","Tvg","Qatvg","Qivg","Sxvg","Spvg","Ocvg","Novg","Tg","Utg","Dtg","Ttg","Qatg","Qitg","Sxtg","Sptg","Octg","Notg","Qag","Uqag","Dqag","Tqag","Qaqag","Qiqag","Sxqag","Spqag","Ocqag","Noqag","Qig","Uqig","Dqig","Tqig","Qaqig","Qiqig","Sxqig","Spqig","Ocqig","Noqig","Sg","Usg","Dsg","Tsg","Qasg","Qisg","Sxsg","Spsg","Ocsg","Nosg","Spg","Uspg","Dspg","Tspg","Qaspg","Qispg","Sxspg","Spspg","Ocspg","Nospg","Ocg","Uocg","Docg","Tocg","Qaocg","Qiocg","Sxocg","Spocg","Ococg","Noocg","Nog","Unog","Dnog","Tnog","Qanog","Qinog","Sxnog","Spnog","Ocnog","Nonog","Cg"];
 
-// Suffix for a given group index (group = floor(log10 / 3)).
-// 0..101 are named; 102+ are "E"+index, exactly like the sheet.
 function suffixForGroup(g) {
   if (g < 0) return "";
   if (g < NAMED.length) return NAMED[g];
-  return "E" + g;
+  return "E" + g;                      // beyond Cg the game uses E-notation
 }
-// Reverse: suffix string -> exponent (group * 3). Used for parsing input.
 const SUFFIX_EXP = {};
 NAMED.forEach((s, i) => { if (s) SUFFIX_EXP[s.toLowerCase()] = i * 3; });
 
-// ---- Cost maths (done in log10 space to survive huge numbers) ----
-const LOG_C   = Math.log10(681);       // base coefficient
-const LOG_R   = Math.log10(6.10016);   // growth per level
-const RATE    = 6.10016;
+// ============ Cost maths (log10 space for huge numbers) ============
+const LOG_C = Math.log10(681);
+const LOG_R = Math.log10(6.10016);
+const RATE  = 6.10016;
 
-function logCost(L) { return LOG_C + (L - 4) * LOG_R; }
+const logCost = L => LOG_C + (L - 4) * LOG_R;
 
-// log10 of the summed cost for levels (from+1 .. to), via geometric series.
-function logSumCosts(from, to) {
+function logSumCosts(from, to) {           // log10 of summed cost, levels from+1..to
   if (to <= from) return -Infinity;
   const N = to - from;
-  const maxLog = logCost(to);            // largest term
   const r = 1 / RATE;
-  const ratio = (1 - Math.pow(r, N)) / (1 - r);
-  return maxLog + Math.log10(ratio);
+  return logCost(to) + Math.log10((1 - Math.pow(r, N)) / (1 - r));
+}
+function logSub(a, b) {                     // log10(A-B), A>=B
+  if (b > a) [a, b] = [b, a];
+  const d = b - a;
+  return d < -15 ? a : a + Math.log10(1 - Math.pow(10, d));
+}
+function fmt(v) {                           // "X.XX"+suffix
+  if (!isFinite(v)) return "&mdash;";
+  const g = Math.floor(v / 3);
+  return (Math.pow(10, v - 3 * g)).toFixed(2) + suffixForGroup(g);
 }
 
-// Format a log10 value as "X.XX" + suffix, matching the sheet.
-function fmt(log10v) {
-  if (!isFinite(log10v)) return "&mdash;";
-  const g = Math.floor(log10v / 3);
-  const mantissa = Math.pow(10, log10v - 3 * g);
-  return mantissa.toFixed(2) + suffixForGroup(g);
-}
-
-// log10 of (A - B) given their log10 values, with A >= B. Stays accurate for huge numbers.
-function logSub(logA, logB) {
-  if (logB > logA) return logSub(logB, logA); // safety
-  const d = logB - logA;            // <= 0
-  if (d < -15) return logA;          // B is negligible vs A
-  return logA + Math.log10(1 - Math.pow(10, d));
-}
-
-// ---- Anima input ----
-// Parse text like "42.7Usg", "42.7 Usg", "5e66", or "1234".
-// Returns { log } on success, { error:true } if a suffix was typed but not recognised, or null if empty.
+// ============ Parse Anima input ============
 function readAnima() {
   const raw = document.getElementById('anima').value.trim();
   if (!raw) return null;
-
-  // plain number or scientific (e.g. 5e66)
   if (/^[0-9]*\.?[0-9]+(e[+-]?[0-9]+)?$/i.test(raw)) {
     const n = parseFloat(raw);
-    if (!isFinite(n) || n <= 0) return { error: true };
-    return { log: Math.log10(n) };
+    return (isFinite(n) && n > 0) ? { log: Math.log10(n) } : { error: true };
   }
-
-  // number + suffix
   const m = raw.match(/^([0-9]*\.?[0-9]+)\s*([A-Za-z]+[0-9]*)$/);
   if (!m) return { error: true };
-  const mantissa = parseFloat(m[1]);
-  const suf = m[2];
-  if (!isFinite(mantissa) || mantissa <= 0) return { error: true };
-
-  // named suffix?
-  if (suf.toLowerCase() in SUFFIX_EXP) {
-    return { log: Math.log10(mantissa) + SUFFIX_EXP[suf.toLowerCase()] };
-  }
-  // E-notation suffix like "E130"
+  const mant = parseFloat(m[1]), suf = m[2];
+  if (!(isFinite(mant) && mant > 0)) return { error: true };
+  if (suf.toLowerCase() in SUFFIX_EXP) return { log: Math.log10(mant) + SUFFIX_EXP[suf.toLowerCase()] };
   const em = suf.match(/^[eE]([0-9]+)$/);
-  if (em) return { log: Math.log10(mantissa) + parseInt(em[1], 10) * 3 };
-
+  if (em) return { log: Math.log10(mant) + parseInt(em[1], 10) * 3 };
   return { error: true };
 }
 
-// ---- Update loop ----
+// ============ Render ============
+const $ = id => document.getElementById(id);
+
 function update() {
-  const cur = parseInt(document.getElementById('current').value, 10);
-  const tgt = parseInt(document.getElementById('target').value, 10);
-  const msg = document.getElementById('msg');
-  const verdict = document.getElementById('verdict');
-  msg.textContent = '';
+  const cur = parseInt($('current').value, 10);
+  const tgt = parseInt($('target').value, 10);
+  const err = $('err');
+  const total = $('total');
+  const compare = $('compare');
+  const verdict = $('verdict');
+  err.textContent = '';
 
-  document.getElementById('nextLvl').textContent = isFinite(cur) ? cur + 1 : '?';
+  $('nextLvl').textContent = isFinite(cur) ? cur + 1 : '–';
 
-  const totalEl = document.getElementById('totalCost');
-  const nextEl  = document.getElementById('nextCost');
-  const pair    = document.getElementById('pair');
+  // next-level cost (needs only current)
+  $('nextCost').innerHTML = isFinite(cur) && cur >= 0 ? fmt(logCost(cur + 1)) : '&mdash;';
 
-  if (!isFinite(cur) || cur < 0) {
-    totalEl.innerHTML = '&mdash;';
-    nextEl.innerHTML = '&mdash;';
-    pair.style.display = 'none';
-    verdict.className = 'verdict'; return;
+  // ---- empty / invalid states ----
+  if (!isFinite(cur) || cur < 0 || !isFinite(tgt)) {
+    total.className = 'big empty';
+    total.textContent = 'Enter your levels above';
+    compare.style.display = 'none';
+    verdict.className = 'verdict';
+    renderRanks(null, null);
+    return;
+  }
+  if (tgt <= cur) {
+    total.className = 'big empty';
+    total.textContent = '—';
+    err.textContent = 'Target level must be higher than current level.';
+    compare.style.display = 'none';
+    verdict.className = 'verdict';
+    renderRanks(null, null);
+    return;
   }
 
-  nextEl.innerHTML = fmt(logCost(cur + 1));
-
-  if (!isFinite(tgt) || tgt <= cur) {
-    totalEl.innerHTML = '&mdash;';
-    pair.style.display = 'none';
-    verdict.className = 'verdict'; return;
-  }
-
+  // ---- total cost ----
   const logTotal = logSumCosts(cur, tgt);
-  totalEl.innerHTML = fmt(logTotal);
+  const goalGroup = Math.floor(logTotal / 3);
+  total.className = 'big';
+  total.innerHTML = fmt(logTotal);
 
-  // Anima comparison
+  // ---- anima comparison ----
   const anima = readAnima();
-
-  if (anima === null) {              // empty
-    pair.style.display = 'none';
+  if (anima === null) {
+    compare.style.display = 'none';
     verdict.className = 'verdict';
+    renderRanks(null, goalGroup);
     return;
   }
-  if (anima.error) {                 // typed something unrecognised
-    pair.style.display = 'none';
-    msg.textContent = 'Couldn\'t read that. Try like "42.7Usg" or "5e66".';
+  if (anima.error) {
+    compare.style.display = 'none';
     verdict.className = 'verdict';
+    err.textContent = 'Couldn\u2019t read that. Try "42.7Usg" or "5e66".';
+    renderRanks(null, goalGroup);
     return;
   }
 
-  const logAnima = anima.log;
-  pair.style.display = 'grid';
-  document.getElementById('yourAnima').innerHTML = fmt(logAnima);
-  document.getElementById('needTotal').innerHTML = fmt(logTotal);
+  const logA = anima.log;
+  const haveGroup = Math.floor(logA / 3);
+  compare.style.display = 'grid';
+  $('have').innerHTML = fmt(logA);
+  $('need').innerHTML = fmt(logTotal);
 
-  if (logAnima >= logTotal) {
-    verdict.className = 'verdict ok';
-    verdict.innerHTML = 'You can afford it.<span class="big">Left over: ' +
-      fmt(logSub(logAnima, logTotal)) + '</span>';
-  } else {
-    const g0 = Math.floor(logAnima / 3);   // current rank tier
-    const g1 = Math.floor(logTotal / 3);   // goal rank tier
-    const ratioLog = logTotal - logAnima;
-    verdict.className = 'verdict bad';
+  if (logA >= logTotal) {
+    verdict.className = 'verdict ok show';
     verdict.innerHTML =
-      buildChain(g0, g1) +
-      '<span class="sub">(' + fmt(ratioLog) + '&times; more Anima to farm)</span>';
+      '<div class="line1">You can afford it</div>' +
+      '<div class="headline">Left over: ' + fmt(logSub(logA, logTotal)) + '</div>';
+  } else {
+    verdict.className = 'verdict bad show';
+    verdict.innerHTML =
+      '<div class="line1">Ranks left to farm</div>' +
+      buildPath(haveGroup, goalGroup) +
+      '<span class="ratio">' + fmt(logTotal - logA) + '&times; more Anima needed</span>';
   }
+  renderRanks(haveGroup, goalGroup);
 }
 
-// Build the rank chain: current rank, the ranks left to farm, then the goal.
-function buildChain(g0, g1) {
-  const node = (g, cls) =>
-    '<span class="node ' + cls + '">' + (suffixForGroup(g) || 'plain') + '</span>';
-  const SEP = '<span class="sep">&rsaquo;</span>';
-
-  if (g0 === g1) {                         // same rank, just need more
-    return '<div class="chain">' + node(g0, 'goal') + '</div>';
-  }
-
+// mini rank path shown in the verdict: now > mid > … > goal
+function buildPath(g0, g1) {
+  const node = (g, c) => '<span class="n ' + c + '">' + (suffixForGroup(g) || 'plain') + '</span>';
+  const ARR = '<span class="arr">&rsaquo;</span>';
   let parts = [];
-  const span = g1 - g0;
-  if (span <= 6) {                         // short enough: show every rank
-    for (let g = g0; g <= g1; g++) {
-      parts.push(node(g, g === g0 ? 'now' : g === g1 ? 'goal' : 'todo'));
-    }
-  } else {                                 // too many: current › next › … › goal
-    parts.push(node(g0, 'now'));
-    parts.push(node(g0 + 1, 'todo'));
-    parts.push('<span class="sep">&hellip;</span>');
-    parts.push(node(g1 - 1, 'todo'));
-    parts.push(node(g1, 'goal'));
+  if (g0 === g1) return '<div class="path">' + node(g0, 'goal') + '</div>';
+  if (g1 - g0 <= 5) {
+    for (let g = g0; g <= g1; g++) parts.push(node(g, g === g0 ? 'now' : g === g1 ? 'goal' : 'mid'));
+  } else {
+    parts = [node(g0,'now'), node(g0+1,'mid'), '<span class="arr">&hellip;</span>', node(g1-1,'mid'), node(g1,'goal')];
   }
-  return '<div class="chain">' + parts.join(SEP) + '</div>';
+  return '<div class="path">' + parts.join(ARR) + '</div>';
 }
 
-['current','target','anima'].forEach(id =>
-  document.getElementById(id).addEventListener('input', update));
+// full rank reference, all ranks in order, 2 columns, current + goal highlighted
+function renderRanks(haveGroup, goalGroup) {
+  const box = $('rankList');
+  let maxG = 101;
+  if (goalGroup != null) maxG = Math.max(maxG, goalGroup);
+  if (haveGroup != null) maxG = Math.max(maxG, haveGroup);
+
+  const lo = (haveGroup != null && goalGroup != null) ? Math.min(haveGroup, goalGroup) : Infinity;
+  const hi = (haveGroup != null && goalGroup != null) ? Math.max(haveGroup, goalGroup) : -Infinity;
+
+  let html = '';
+  for (let g = 1; g <= maxG; g++) {
+    let cls = '', tag = '';
+    if (g === haveGroup)      { cls = ' now';  tag = '<span class="tg">you</span>'; }
+    else if (g === goalGroup) { cls = ' goal'; tag = '<span class="tg">goal</span>'; }
+    else if (g > lo && g < hi){ cls = ' mid'; }
+    html += '<div class="r' + cls + '" data-g="' + g + '"><span class="nm">' + suffixForGroup(g) + '</span>' + tag + '</div>';
+  }
+  box.innerHTML = html;
+
+  const focus = haveGroup != null ? haveGroup : goalGroup;
+  if (focus != null) {
+    const el = box.querySelector('[data-g="' + focus + '"]');
+    if (el) {
+      const er = el.getBoundingClientRect(), pr = box.getBoundingClientRect();
+      box.scrollTop += (er.top - pr.top) - box.clientHeight / 2 + el.clientHeight / 2;
+    }
+  }
+}
+
+['current','target','anima'].forEach(id => $(id).addEventListener('input', update));
 update();
 </script>
 </body>
