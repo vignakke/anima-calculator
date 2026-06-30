@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>More Qi Calculator — Great Tomb of Nazarick</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0a0703;
+    --card:      rgba(18, 13, 7, 0.92);
+    --card-2:    rgba(11, 8, 4, 0.94);
+    --inset:     rgba(6, 4, 2, 0.92);
+    --border:    #6b5325;
+    --border-2:  #97742f;
+    --text:      #faf3e3;
+    --muted:     #cdb784;
+    --faint:     #8c7a55;
+    --gold:      #e6c25a;
+    --gold-2:    #ffe9a8;
+    --crimson:   #c0392b;
+    --crimson-2: #f08070;
+    --good:      #f0d066;
+    --good-bg:   rgba(216,179,71,0.16);
+    --bad:       #e05a4a;
+    --bad-bg:    rgba(192,57,43,0.16);
+    --radius:    14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;                 /* + margin:auto on .app = centered when it
+                                      fits, fully scrollable when it doesn't */
+    padding: 26px 22px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+  /* fixed throne-room background with a heavy dark veil for readability */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(6,4,2,0.80) 0%, rgba(6,4,2,0.88) 55%, rgba(5,3,1,0.96) 100%),
+      radial-gradient(1200px 700px at 50% -10%, rgba(70,45,15,0.35) 0%, transparent 60%),
+      url("assets/bg-throne.jpg") center 18% / cover no-repeat,
+      var(--bg);
+    z-index: -2;
+  }
+  /* faint gold emblem watermark */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url("assets/emblem.png") center 46% / 620px no-repeat;
+    opacity: 0.04;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 1040px;
+    margin: auto;                  /* centers in the flex body, scroll-safe */
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.95fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* ---------- header ---------- */
+  header { grid-column: 1 / -1; text-align: center; margin-bottom: 2px; }
+  .emblem {
+    width: 66px; height: auto;
+    display: block; margin: 0 auto 6px;
+    filter: drop-shadow(0 0 18px rgba(216,179,71,.45));
+    animation: glow 4s ease-in-out infinite;
+  }
+  @keyframes glow {
+    0%,100% { filter: drop-shadow(0 0 12px rgba(216,179,71,.35)); }
+    50%     { filter: drop-shadow(0 0 24px rgba(216,179,71,.6)); }
+  }
+  h1 {
+    font-family: 'Cinzel', Georgia, serif;
+    font-size: 25px; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--gold-2);
+    text-shadow: 0 2px 14px rgba(0,0,0,.8), 0 0 22px rgba(216,179,71,.3);
+  }
+  h1 b { color: var(--gold); font-weight: 900; }
+  .sub {
+    margin-top: 7px; color: #f0dcab; font-size: 14.5px; font-weight: 500;
+    letter-spacing: .3px;
+    text-shadow: 0 1px 4px rgba(0,0,0,1), 0 0 10px rgba(0,0,0,.95);
+  }
+
+  /* ---------- panels ---------- */
+  .card, .ranks {
+    background: linear-gradient(180deg, var(--card) 0%, var(--card-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    box-shadow: 0 26px 70px -26px rgba(0,0,0,.9),
+                inset 0 1px 0 rgba(216,179,71,.22);
+  }
+  .card { padding: 20px 22px; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+  .field { margin-bottom: 13px; }
+  .field:last-child { margin-bottom: 0; }
+  label {
+    display: block;
+    font-size: 12.5px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--muted); margin-bottom: 6px;
+  }
+  input {
+    width: 100%; padding: 11px 13px;
+    background: var(--inset);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    color: var(--text); font-size: 17px; font-weight: 600; font-family: inherit;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input::placeholder { color: var(--faint); font-weight: 500; }
+  input:focus {
+    outline: none; border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(216,179,71,.18);
+  }
+  .err { font-size: 13px; color: var(--crimson-2); margin-top: 7px; min-height: 0; }
+
+  .rule {
+    height: 1px; margin: 16px 0;
+    background: linear-gradient(90deg, transparent, var(--border-2), transparent);
+  }
+
+  /* ---------- result ---------- */
+  .result { text-align: center; }
+  .result .cap {
+    font-family: 'Cinzel', Georgia, serif;
+    font-size: 12.5px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 1.4px; color: var(--muted); margin-bottom: 9px;
+  }
+  .result .big {
+    font-family: 'Cinzel', Georgia, serif;
+    font-size: 38px; font-weight: 700;
+    color: var(--gold-2); line-height: 1.05; word-break: break-word;
+    text-shadow: 0 0 26px rgba(216,179,71,.45), 0 2px 10px rgba(0,0,0,.7);
+  }
+  .result .empty { font-size: 16px; font-weight: 500; color: var(--faint); text-shadow: none; letter-spacing: .5px; }
+
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .compare .box {
+    background: var(--inset); border: 1px solid var(--border);
+    border-radius: 12px; padding: 11px 12px; text-align: center;
+  }
+  .compare .box .k {
+    font-family: 'Cinzel', Georgia, serif;
+    font-size: 12px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: .8px; color: var(--muted); margin-bottom: 7px;
+  }
+  .compare .box .v { font-size: 22px; font-weight: 700; word-break: break-word; }
+
+  .verdict { margin-top: 14px; padding: 13px; border-radius: 12px; text-align: center; display: none; }
+  .verdict.show { display: block; }
+  .verdict.ok  { background: var(--good-bg); border: 1px solid rgba(216,179,71,.4); }
+  .verdict.bad { background: var(--bad-bg);  border: 1px solid rgba(192,57,43,.4); }
+  .verdict .line1 { font-size: 14px; font-weight: 600; color: var(--muted); }
+  .verdict.ok .headline  { color: var(--good); }
+  .verdict.bad .headline { color: var(--text); }
+  .verdict .headline { font-family: 'Cinzel', Georgia, serif; font-size: 21px; font-weight: 700; margin-top: 6px; letter-spacing: .3px; }
+  .verdict .ratio { display: block; margin-top: 10px; font-size: 13.5px; font-weight: 600; color: var(--muted); }
+
+  .path { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 7px; margin-top: 6px; }
+  .path .n { padding: 4px 11px; border-radius: 8px; font-size: 15px; font-weight: 700; }
+  .path .n.now  { color: var(--text); background: #2a2010; border: 1px solid var(--border-2); }
+  .path .n.mid  { color: var(--crimson-2); }
+  .path .n.goal { color: var(--good); background: var(--good-bg); border: 1px solid rgba(216,179,71,.4); }
+  .path .arr { color: var(--faint); font-weight: 700; }
+
+  .nextrow {
+    display: flex; justify-content: center; align-items: center; gap: 9px;
+    margin-top: 14px; padding-top: 13px;
+    border-top: 1px solid var(--border); font-size: 15px;
+  }
+  .nextrow .k { color: #e0cda0; font-weight: 600; }
+  .nextrow .v { color: var(--gold-2); font-weight: 800; }
+
+  /* ---------- ranks ---------- */
+  .ranks { padding: 14px 14px; }
+  .ranks .head {
+    font-family: 'Cinzel', Georgia, serif;
+    font-size: 12.5px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 1.4px; color: var(--muted); text-align: center;
+    padding-bottom: 9px; border-bottom: 1px solid var(--border);
+  }
+  .ranks .list { column-width: 84px; column-gap: 9px; padding-top: 8px; }
+  .r {
+    break-inside: avoid;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    padding: 2px 6px; border-radius: 6px;
+    font-size: 14.5px; color: var(--muted); line-height: 1.5;
+  }
+  .r .nm { font-weight: 600; }
+  .r .tg { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; }
+  .r.now  { color: var(--text); background: #2a2010; }
+  .r.now .tg  { color: var(--gold); }
+  .r.mid  { color: var(--crimson-2); }
+  .r.goal { color: var(--good); background: var(--good-bg); }
+  .r.goal .tg { color: var(--good); }
+
+  footer {
+    grid-column: 1 / -1; text-align: center;
+    color: #c5b083; font-size: 13px; font-weight: 500; margin-top: 4px;
+    text-shadow: 0 1px 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,.9);
+  }
+
+  /* stack into one column once the side-by-side layout gets cramped */
+  @media (max-width: 860px) {
+    body { padding: 24px 16px; }
+    .app { grid-template-columns: 1fr; gap: 16px; }
+  }
+  @media (max-width: 440px) {
+    body { padding: 18px 12px; }
+    .card { padding: 18px 16px; }
+    .grid2 { grid-template-columns: 1fr; }
+    .emblem { width: 60px; }
+    h1 { font-size: 22px; letter-spacing: 1px; }
+    .result .big { font-size: 32px; }
+    .ranks .list { column-width: 74px; }
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+
+    <header>
+      <img class="emblem" src="assets/emblem.png" alt="Flag of Ainz Ooal Gown">
+      <h1>More <b>Qi</b> Calculator</h1>
+      <p class="sub">The Anima tribute to elevate your More Qi, by decree of the Supreme One.</p>
+    </header>
+
+    <div class="card">
+      <div class="grid2">
+        <div class="field">
+          <label for="current">Current level</label>
+          <input type="number" id="current" placeholder="252" min="0" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="target">Target level</label>
+          <input type="number" id="target" placeholder="253" min="1" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:16px">
+        <label for="anima">Anima you have <span style="text-transform:none;color:var(--faint);font-weight:500">(optional)</span></label>
+        <input type="text" id="anima" placeholder="e.g. 42.7Usg" autocomplete="off">
+        <div class="err" id="err"></div>
+      </div>
+
+      <div class="rule"></div>
+
+      <div class="result">
+        <div class="cap">Total cost to reach target</div>
+        <div class="big empty" id="total">Declare your levels above</div>
+      </div>
+
+      <div class="compare" id="compare" style="display:none">
+        <div class="box"><div class="k">Treasury</div><div class="v" id="have">&mdash;</div></div>
+        <div class="box"><div class="k">Tribute</div><div class="v" id="need">&mdash;</div></div>
+      </div>
+
+      <div class="verdict" id="verdict"></div>
+
+      <div class="nextrow">
+        <span class="k">Next level (<span id="nextLvl">&ndash;</span>) costs</span>
+        <span class="v" id="nextCost">&mdash;</span>
+      </div>
+    </div>
+
+    <aside class="ranks">
+      <div class="head">All ranks &mdash; small to big</div>
+      <div class="list" id="rankList"></div>
+    </aside>
+
+    <footer>Bound to the Great Tomb of Nazarick &middot; costs and suffixes match the in-game values.</footer>
+  </div>
+
+<script>
+// ============ Data from the spreadsheet ============
+const NAMED = ["", "K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Ud","Dd","Td","Qad","Qid","Sxd","Spd","Ocd","Nod","Vg","Uvg","Dvg","Tvg","Qatvg","Qivg","Sxvg","Spvg","Ocvg","Novg","Tg","Utg","Dtg","Ttg","Qatg","Qitg","Sxtg","Sptg","Octg","Notg","Qag","Uqag","Dqag","Tqag","Qaqag","Qiqag","Sxqag","Spqag","Ocqag","Noqag","Qig","Uqig","Dqig","Tqig","Qaqig","Qiqig","Sxqig","Spqig","Ocqig","Noqig","Sg","Usg","Dsg","Tsg","Qasg","Qisg","Sxsg","Spsg","Ocsg","Nosg","Spg","Uspg","Dspg","Tspg","Qaspg","Qispg","Sxspg","Spspg","Ocspg","Nospg","Ocg","Uocg","Docg","Tocg","Qaocg","Qiocg","Sxocg","Spocg","Ococg","Noocg","Nog","Unog","Dnog","Tnog","Qanog","Qinog","Sxnog","Spnog","Ocnog","Nonog","Cg"];
+
+function suffixForGroup(g) {
+  if (g < 0) return "";
+  if (g < NAMED.length) return NAMED[g];
+  return "E" + g;
+}
+const SUFFIX_EXP = {};
+NAMED.forEach((s, i) => { if (s) SUFFIX_EXP[s.toLowerCase()] = i * 3; });
+
+// ============ Cost maths (log10 space) ============
+const LOG_C = Math.log10(681);
+const LOG_R = Math.log10(6.1);
+const RATE  = 6.1;
+const logCost = L => LOG_C + (L - 4) * LOG_R;
+
+function logSumCosts(from, to) {
+  if (to <= from) return -Infinity;
+  const N = to - from, r = 1 / RATE;
+  return logCost(to) + Math.log10((1 - Math.pow(r, N)) / (1 - r));
+}
+function logSub(a, b) {
+  if (b > a) [a, b] = [b, a];
+  const d = b - a;
+  return d < -15 ? a : a + Math.log10(1 - Math.pow(10, d));
+}
+function fmt(v) {
+  if (!isFinite(v)) return "&mdash;";
+  const g = Math.floor(v / 3);
+  return (Math.pow(10, v - 3 * g)).toFixed(2) + suffixForGroup(g);
+}
+
+// ============ Parse Anima ============
+function readAnima() {
+  const raw = document.getElementById('anima').value.trim();
+  if (!raw) return null;
+  if (/^[0-9]*\.?[0-9]+(e[+-]?[0-9]+)?$/i.test(raw)) {
+    const n = parseFloat(raw);
+    return (isFinite(n) && n > 0) ? { log: Math.log10(n) } : { error: true };
+  }
+  const m = raw.match(/^([0-9]*\.?[0-9]+)\s*([A-Za-z]+[0-9]*)$/);
+  if (!m) return { error: true };
+  const mant = parseFloat(m[1]), suf = m[2];
+  if (!(isFinite(mant) && mant > 0)) return { error: true };
+  if (suf.toLowerCase() in SUFFIX_EXP) return { log: Math.log10(mant) + SUFFIX_EXP[suf.toLowerCase()] };
+  const em = suf.match(/^[eE]([0-9]+)$/);
+  if (em) return { log: Math.log10(mant) + parseInt(em[1], 10) * 3 };
+  return { error: true };
+}
+
+// ============ Render ============
+const $ = id => document.getElementById(id);
+
+function update() {
+  const cur = parseInt($('current').value, 10);
+  const tgt = parseInt($('target').value, 10);
+  const err = $('err'), total = $('total'), compare = $('compare'), verdict = $('verdict');
+  err.textContent = '';
+
+  $('nextLvl').textContent = isFinite(cur) ? cur + 1 : '–';
+  $('nextCost').innerHTML = isFinite(cur) && cur >= 0 ? fmt(logCost(cur + 1)) : '&mdash;';
+
+  if (!isFinite(cur) || cur < 0 || !isFinite(tgt)) {
+    total.className = 'big empty'; total.textContent = 'Declare your levels above';
+    compare.style.display = 'none'; verdict.className = 'verdict';
+    renderRanks(null, null); return;
+  }
+  if (tgt <= cur) {
+    total.className = 'big empty'; total.textContent = '—';
+    err.textContent = 'Target level must be higher than current level.';
+    compare.style.display = 'none'; verdict.className = 'verdict';
+    renderRanks(null, null); return;
+  }
+
+  const logTotal = logSumCosts(cur, tgt);
+  const goalGroup = Math.floor(logTotal / 3);
+  total.className = 'big'; total.innerHTML = fmt(logTotal);
+
+  const anima = readAnima();
+  if (anima === null) {
+    compare.style.display = 'none'; verdict.className = 'verdict';
+    renderRanks(null, goalGroup); return;
+  }
+  if (anima.error) {
+    compare.style.display = 'none'; verdict.className = 'verdict';
+    err.textContent = 'Couldn\u2019t read that. Try "42.7Usg" or "5e66".';
+    renderRanks(null, goalGroup); return;
+  }
+
+  const logA = anima.log, haveGroup = Math.floor(logA / 3);
+  compare.style.display = 'grid';
+  $('have').innerHTML = fmt(logA);
+  $('need').innerHTML = fmt(logTotal);
+
+  if (logA >= logTotal) {
+    verdict.className = 'verdict ok show';
+    verdict.innerHTML =
+      '<div class="line1">The treasury suffices</div>' +
+      '<div class="headline">Surplus: ' + fmt(logSub(logA, logTotal)) + '</div>';
+  } else {
+    verdict.className = 'verdict bad show';
+    verdict.innerHTML =
+      '<div class="line1">Ranks yet to ascend</div>' +
+      buildPath(haveGroup, goalGroup) +
+      '<span class="ratio">' + fmt(logTotal - logA) + '&times; more Anima to amass</span>';
+  }
+  renderRanks(haveGroup, goalGroup);
+}
+
+function buildPath(g0, g1) {
+  const node = (g, c) => '<span class="n ' + c + '">' + (suffixForGroup(g) || 'plain') + '</span>';
+  const ARR = '<span class="arr">&rsaquo;</span>';
+  let parts = [];
+  if (g0 === g1) return '<div class="path">' + node(g0, 'goal') + '</div>';
+  if (g1 - g0 <= 5) {
+    for (let g = g0; g <= g1; g++) parts.push(node(g, g === g0 ? 'now' : g === g1 ? 'goal' : 'mid'));
+  } else {
+    parts = [node(g0,'now'), node(g0+1,'mid'), '<span class="arr">&hellip;</span>', node(g1-1,'mid'), node(g1,'goal')];
+  }
+  return '<div class="path">' + parts.join(ARR) + '</div>';
+}
+
+function renderRanks(haveGroup, goalGroup) {
+  const box = $('rankList');
+  let maxG = 101;
+  if (goalGroup != null) maxG = Math.max(maxG, goalGroup);
+  if (haveGroup != null) maxG = Math.max(maxG, haveGroup);
+  const lo = (haveGroup != null && goalGroup != null) ? Math.min(haveGroup, goalGroup) : Infinity;
+  const hi = (haveGroup != null && goalGroup != null) ? Math.max(haveGroup, goalGroup) : -Infinity;
+
+  let html = '';
+  for (let g = 1; g <= maxG; g++) {
+    let cls = '', tag = '';
+    if (g === haveGroup)      { cls = ' now';  tag = '<span class="tg">you</span>'; }
+    else if (g === goalGroup) { cls = ' goal'; tag = '<span class="tg">goal</span>'; }
+    else if (g > lo && g < hi){ cls = ' mid'; }
+    html += '<div class="r' + cls + '" data-g="' + g + '"><span class="nm">' + suffixForGroup(g) + '</span>' + tag + '</div>';
+  }
+  box.innerHTML = html;
+
+  const focus = haveGroup != null ? haveGroup : goalGroup;
+  if (focus != null) {
+    const el = box.querySelector('[data-g="' + focus + '"]');
+    if (el) {
+      const er = el.getBoundingClientRect(), pr = box.getBoundingClientRect();
+      box.scrollTop += (er.top - pr.top) - box.clientHeight / 2 + el.clientHeight / 2;
+    }
+  }
+}
+
+['current','target','anima'].forEach(id => $(id).addEventListener('input', update));
+update();
+</script>
+</body>
+</html>
